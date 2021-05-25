@@ -2,58 +2,6 @@
 #include "assert.h"
 
 
-int a(uint8_t path[],int pathLength){
-    int ri=0;
-    int rf=pow(2,pathLength)-1;
-
-    int i=0;
-    int medio;
-    while(ri<rf){
-        if(i>=pathLength){
-            printf("ups error in a\n");
-            assert(1==0);
-        }
-        medio=(ri+rf)/2;
-        if(path[i]<=1){
-            rf=medio;
-        }else{
-            ri=medio +1;
-        }
-        i++;
-    }
-
-    return ri;
-}
-
-int b(uint8_t path[],int pathLength){
-
-    int ri=0;
-    int rf=pow(2,pathLength)-1;;
-
-    int i=0;
-    int medio;
-    while(ri<rf){
-        if(i>=pathLength){
-            printf("ups error in b\n");
-            assert(1==0);
-        }
-        medio=(ri+rf)/2;
-        if(path[i]%2==0){
-            rf=medio;
-        }else{
-            ri=medio +1;
-        }
-        i++;
-    }
-    return ri;
-}
-
-int * ab(uint8_t path[],int pathLength){
-    static int node[2];
-    node[0]=a(path,pathLength);
-    node[1]=b(path,pathLength);
-    return node;
-}
 
 int main(){
 
@@ -136,12 +84,11 @@ int main(){
                 int pathLength=23;
                 int left=0;
                 int right=pow(2,pathLength)-1;
+                std::vector<int> neigs;
                 start = clock();
-                linkedList* answer=getNeighboursTrie(t,neigNode,23,0,22,left,right,left,right);
+                getNeighboursTrie(t,neigNode,23,0,22,left,right,left,right,neigs);
                 diff += clock() - start;
-                //printLinkedList(answer);
-
-                freeLinkedList(answer);
+                neigs.clear();
 
 
             }

@@ -9,7 +9,7 @@
 #include <utility>
 #include <stdint.h>
 #include <time.h>
-
+#include <vector>
 
 //our modules
 #include "preComputedTables.h"
@@ -21,7 +21,7 @@
 #include "trieNode.h"
 #include "treeBlock.h"
 #include "blockPtr.h"
-#include "linkedList.cpp"
+#include "edgeConversorAPI.cpp"
 #include "treeBlock.cpp"
 #include "insertDeleteAPI.cpp"
 
