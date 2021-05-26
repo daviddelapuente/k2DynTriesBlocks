@@ -1074,13 +1074,13 @@ void getNeighboursBlock(treeBlock *root, int nodeid, uint64_t length, uint16_t l
 
 //neighbours api: the idea is to retrieve the neighbours of a node x
 //the neighbours will be a linked list with all the nodes in the graph that has a 1 in the row x
-//that means all the G[x][i]=1
+//that means all the G[i[x]=1
 void getNeighboursTrie(trieNode *t, int nodeid, uint64_t length,uint64_t level ,uint16_t maxDepth,int rleft,int rright, int cleft,int cright,std::vector<int> &neigs) {
     if (t==NULL){
         return;
-    }else if(t->children[0]==NULL && t->children[1]==NULL && t->block==NULL){
+    }else if(t->children[0]==NULL && t->children[1]==NULL && t->children[2]==0 && t->children[3]==0 && t->block==NULL){
         return;
-    }else if(t->children[0]==NULL && t->children[1]==NULL && t->block!=NULL){
+    }else if(t->children[0]==NULL && t->children[1]==NULL && t->children[2]==0 && t->children[3]==0 && t->block!=NULL){
         treeNode curNode(0,0);
         int16_t curFlag=0;
         getNeighboursBlock((treeBlock*)t->block, nodeid, length, level, maxDepth,rleft,rright,cleft,cright,curNode,curFlag,neigs);
@@ -1096,6 +1096,65 @@ void getNeighboursTrie(trieNode *t, int nodeid, uint64_t length,uint64_t level ,
             getNeighboursTrie(t->children[0],nodeid,length-1,level+1,maxDepth,rleft,rmid,cleft,cmid,neigs);
             getNeighboursTrie(t->children[1],nodeid,length-1,level+1,maxDepth,rleft,rmid,cmid+1,cright,neigs);
             return;
+        }
+    }
+}
+
+
+//two intervals. A =[a1,a2] and B=[b1,b2]
+//return true if A inter B is not empty
+bool intersectIntervals(int a1,int a2,int b1,int b2){
+    if(a2<b1 || b2<a1){
+        return false;
+    }else{
+        return true;
+    }
+}
+
+//two rectangles A with rows ar1 and ar2, columns ac1 and ac2
+// B with rows br1, br2 and columns bc1 and bc2
+// return true if A and B intersect
+bool intersectRectangles(int ar1,int ar2, int ac1, int ac2, int br1, int br2, int bc1, int bc2){
+    return intersectIntervals(ar1,ar2,br1,br2) && intersectIntervals(ac1,ac2,bc1,bc2);
+}
+
+void rangeQuery(trieNode *t, int r1,int r2,int c1,int c2, uint64_t length,uint64_t level ,uint16_t maxDepth,int rleft,int rright, int cleft,int cright,std::vector< std::vector<int> > &answer){
+
+    if (t==NULL){
+        return;
+    }else if(t->children[0]==NULL && t->children[1]==NULL && t->children[2]==0 && t->children[3]==0 && t->block==NULL){
+        return;
+    }else if(t->children[0]==NULL && t->children[1]==NULL && t->children[2]==0 && t->children[3]==0 && t->block!=NULL){
+        treeNode curNode(0,0);
+        int16_t curFlag=0;
+        //rangeQueryBlock((treeBlock*)t->block, r1,r2,c1,c2, length, level, maxDepth,rleft,rright,cleft,cright,curNode,curFlag,answer);
+        printf("yei\n");
+    }else{
+        int rmid=(rleft+rright)/2;
+        int cmid=(cleft+cright)/2;
+
+        //ask if the trie has a 1 in the first quadrant
+        if( t->children[0]!=NULL && intersectRectangles(r1,r2,c1,c2,rleft,rmid,cleft,cmid) ){
+            //add nodes to ansert
+            rangeQuery(t->children[0],std::max(r1,rleft),std::min(r2,rmid),std::max(c1,cleft),std::min(c2,cmid),length-1,level+1,maxDepth,rleft,cmid,cleft,cmid,answer);
+        }
+
+        //ask if the trie has a 1 in the second quadrant
+        if( t->children[1]!=NULL && intersectRectangles(r1,r2,c1,c2,rleft,rmid,cmid+1,cright) ){
+            //add nodes to ansert
+            rangeQuery(t->children[0],std::max(r1,rleft),std::min(r2,rmid),std::max(c1,cmid+1),std::min(c2,cright),length-1,level+1,maxDepth,rleft,cmid,cmid+1,cright,answer);
+        }
+
+        //ask if the trie has a 1 in the third quadrant
+        if( t->children[2]!=NULL && intersectRectangles(r1,r2,c1,c2,rmid+1,rright,cleft,cmid) ){
+            //add nodes to ansert
+            rangeQuery(t->children[0],std::max(r1,rmid+1),std::min(r2,rright),std::max(c1,cleft),std::min(c2,cmid),length-1,level+1,maxDepth,rmid+1,rright,cleft,cmid,answer);
+        }
+
+        //ask if the trie has a 1 in the fourht quadrant
+        if( t->children[3]!=NULL && intersectRectangles(r1,r2,c1,c2,rmid+1,rright,cmid+1,cright) ){
+            //add nodes to ansert
+            rangeQuery(t->children[0],std::max(r1,rmid+1),std::min(r2,rright),std::max(c1,cmid+1),std::min(c2,cright),length-1,level+1,maxDepth,rmid+1,rright,cmid+1,cright,answer);
         }
     }
 }

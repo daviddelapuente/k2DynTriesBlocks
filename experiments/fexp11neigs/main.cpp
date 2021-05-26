@@ -80,7 +80,7 @@ int main(){
             printf("%lu\n",i);
             printf("%i\n",neigNode);
 
-            for(int i2=0;i2<1;i2++){
+            for(int i2=0;i2<10000;i2++){
                 int pathLength=23;
                 int left=0;
                 int right=pow(2,pathLength)-1;
@@ -94,8 +94,8 @@ int main(){
             }
 
             uint64_t msec = diff * 1000 ;
-            printf("     insertTime=%f\n",(float)msec);
-            fprintf(fpinsert,"%f,\n",(float)msec);
+            printf("     insertTime=%f\n",(float)msec/CLOCKS_PER_SEC);
+            fprintf(fpinsert,"%f,\n",(float)msec/CLOCKS_PER_SEC);
         }
     }
 
