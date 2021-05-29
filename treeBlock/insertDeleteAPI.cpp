@@ -1118,8 +1118,136 @@ bool intersectRectangles(int ar1,int ar2, int ac1, int ac2, int br1, int br2, in
     return intersectIntervals(ar1,ar2,br1,br2) && intersectIntervals(ac1,ac2,bc1,bc2);
 }
 
-void rangeQuery(trieNode *t, int r1,int r2,int c1,int c2, uint64_t length,uint64_t level ,uint16_t maxDepth,int rleft,int rright, int cleft,int cright,std::vector< std::vector<int> > &answer){
+void rangeQueryBlock(treeBlock *root, int r1,int r2,int c1,int c2, uint64_t length, uint16_t level, uint16_t maxDepth,int rleft,int rright,int cleft,int cright,treeNode curNode,uint16_t curFlag,std::vector< std::vector<int> > &answer){
 
+    if(r1==r2 && c1==c2 ){
+        std::vector<int> graphNode;
+        graphNode.push_back(r1);
+        graphNode.push_back(c1);
+        answer.push_back(graphNode);
+    }else {
+        treeBlock *curBlock = root;
+
+        int rmid=(rleft+rright)/2;
+        int cmid=(cleft+cright)/2;
+
+
+        //ask in the first quadrant
+        if(intersectRectangles(r1,r2,c1,c2,rleft,rmid,cleft,cmid)){
+            treeNode upLeftAuxNode=curNode;
+            treeBlock * upLeftBlockAux=curBlock;
+            treeNode upLeftcurNodeAux;
+            uint16_t upLeftCurFlag=curFlag;
+            uint16_t upLeftLevel=level;
+
+            upLeftcurNodeAux = upLeftBlockAux->child(upLeftBlockAux, upLeftAuxNode,0, upLeftLevel, maxDepth, upLeftCurFlag);
+
+
+            if (upLeftcurNodeAux.first == (NODE_TYPE)-1){
+
+            }else {
+                upLeftAuxNode = upLeftcurNodeAux;
+
+                if (upLeftBlockAux->nPtrs > 0 && absolutePosition(upLeftAuxNode) == upLeftCurFlag) {
+                    upLeftBlockAux = upLeftBlockAux->getPointer(upLeftCurFlag);
+                    upLeftAuxNode.first = 0;
+                    upLeftAuxNode.second = 0;
+                }
+
+                int cmid=(cleft+cright)/2;
+                rangeQueryBlock(upLeftBlockAux,std::max(r1,rleft),std::min(r2,rmid),std::max(c1,cleft),std::min(c2,cmid),length-1,upLeftLevel,maxDepth,rleft,rmid,cleft,cmid,upLeftAuxNode,upLeftCurFlag,answer);
+            }
+        }
+
+        //ask in the second quadrant
+        if(intersectRectangles(r1,r2,c1,c2,rleft,rmid,cmid+1,cright)){
+            treeBlock * upRightBlockAux=curBlock;
+            treeNode upRightAuxNode=curNode;
+            treeNode upRightcurNodeAux;
+            uint16_t upRightCurFlag=curFlag;
+            uint16_t upRightLevel=level;
+
+            upRightcurNodeAux = upRightBlockAux->child(upRightBlockAux, upRightAuxNode,1, upRightLevel, maxDepth, upRightCurFlag);
+
+
+            if (upRightcurNodeAux.first == (NODE_TYPE)-1){
+
+            }else {
+
+                upRightAuxNode = upRightcurNodeAux;
+                if (upRightBlockAux->nPtrs > 0 && absolutePosition(upRightAuxNode) == upRightCurFlag) {
+                    upRightBlockAux = upRightBlockAux->getPointer(upRightCurFlag);
+                    upRightAuxNode.first = 0;
+                    upRightAuxNode.second = 0;
+                }
+
+                int cmid=(cleft+cright)/2;
+                rangeQueryBlock(upRightBlockAux,std::max(r1,rleft),std::min(r2,rmid),std::max(c1,cmid+1),std::min(c2,cright),length-1,upRightLevel,maxDepth,rleft,rmid,cmid+1,cright,upRightAuxNode,upRightCurFlag,answer);
+            }
+
+        }
+
+        //ask in the third quadrant
+        if(intersectRectangles(r1,r2,c1,c2,rmid+1,rright,cleft,cmid)){
+            treeNode downLeftAuxNode=curNode;
+            treeBlock * downLeftBlockAux=curBlock;
+            treeNode downLeftcurNodeAux;
+            uint16_t downLeftCurFlag=curFlag;
+            uint16_t downLeftLevel=level;
+
+            downLeftcurNodeAux = downLeftBlockAux->child(downLeftBlockAux, downLeftAuxNode,2, downLeftLevel, maxDepth, downLeftCurFlag);
+
+
+            if (downLeftcurNodeAux.first == (NODE_TYPE)-1){
+
+            }else {
+                downLeftAuxNode = downLeftcurNodeAux;
+
+                if (downLeftBlockAux->nPtrs > 0 && absolutePosition(downLeftAuxNode) == downLeftCurFlag) {
+                    downLeftBlockAux = downLeftBlockAux->getPointer(downLeftCurFlag);
+                    downLeftAuxNode.first = 0;
+                    downLeftAuxNode.second = 0;
+                }
+
+                int cmid=(cleft+cright)/2;
+                rangeQueryBlock(downLeftBlockAux,std::max(r1,rmid+1),std::min(r2,rright),std::max(c1,cleft),std::min(c2,cmid),length-1,downLeftLevel,maxDepth,rmid+1,rright,cleft,cmid,downLeftAuxNode,downLeftCurFlag,answer);
+            }
+        }
+
+        //ask the fourth quadrant
+        if(intersectRectangles(r1,r2,c1,c2,rmid+1,rright,cmid+1,cright)){
+            treeBlock * downRightBlockAux=curBlock;
+            treeNode downRightAuxNode=curNode;
+            treeNode downRightcurNodeAux;
+            uint16_t downRightCurFlag=curFlag;
+            uint16_t downRightLevel=level;
+
+            downRightcurNodeAux = downRightBlockAux->child(downRightBlockAux, downRightAuxNode,3, downRightLevel, maxDepth, downRightCurFlag);
+
+
+            if (downRightcurNodeAux.first == (NODE_TYPE)-1){
+
+            }else {
+                downRightAuxNode = downRightcurNodeAux;
+
+                if (downRightBlockAux->nPtrs > 0 && absolutePosition(downRightAuxNode) == downRightCurFlag) {
+                    downRightBlockAux = downRightBlockAux->getPointer(downRightCurFlag);
+                    downRightAuxNode.first = 0;
+                    downRightAuxNode.second = 0;
+                }
+
+                int cmid=(cleft+cright)/2;
+                rangeQueryBlock(downRightBlockAux,std::max(r1,rmid+1),std::min(r2,rright),std::max(c1,cmid+1),std::min(c2,cright),length-1,downRightLevel,maxDepth,rmid+1,rright,cmid+1,cright,downRightAuxNode,downRightCurFlag,answer);
+            }
+        }
+
+    }
+
+
+    return;
+}
+
+void rangeQuery(trieNode *t, int r1,int r2,int c1,int c2, uint64_t length,uint64_t level ,uint16_t maxDepth,int rleft,int rright, int cleft,int cright,std::vector< std::vector<int> > &answer){
     if (t==NULL){
         return;
     }else if(t->children[0]==NULL && t->children[1]==NULL && t->children[2]==0 && t->children[3]==0 && t->block==NULL){
@@ -1127,8 +1255,7 @@ void rangeQuery(trieNode *t, int r1,int r2,int c1,int c2, uint64_t length,uint64
     }else if(t->children[0]==NULL && t->children[1]==NULL && t->children[2]==0 && t->children[3]==0 && t->block!=NULL){
         treeNode curNode(0,0);
         int16_t curFlag=0;
-        //rangeQueryBlock((treeBlock*)t->block, r1,r2,c1,c2, length, level, maxDepth,rleft,rright,cleft,cright,curNode,curFlag,answer);
-        printf("yei\n");
+        rangeQueryBlock((treeBlock*)t->block, r1,r2,c1,c2, length, level, maxDepth,rleft,rright,cleft,cright,curNode,curFlag,answer);
     }else{
         int rmid=(rleft+rright)/2;
         int cmid=(cleft+cright)/2;
@@ -1136,25 +1263,25 @@ void rangeQuery(trieNode *t, int r1,int r2,int c1,int c2, uint64_t length,uint64
         //ask if the trie has a 1 in the first quadrant
         if( t->children[0]!=NULL && intersectRectangles(r1,r2,c1,c2,rleft,rmid,cleft,cmid) ){
             //add nodes to ansert
-            rangeQuery(t->children[0],std::max(r1,rleft),std::min(r2,rmid),std::max(c1,cleft),std::min(c2,cmid),length-1,level+1,maxDepth,rleft,cmid,cleft,cmid,answer);
+            rangeQuery(t->children[0],std::max(r1,rleft),std::min(r2,rmid),std::max(c1,cleft),std::min(c2,cmid),length-1,level+1,maxDepth,rleft,rmid,cleft,cmid,answer);
         }
 
         //ask if the trie has a 1 in the second quadrant
         if( t->children[1]!=NULL && intersectRectangles(r1,r2,c1,c2,rleft,rmid,cmid+1,cright) ){
             //add nodes to ansert
-            rangeQuery(t->children[0],std::max(r1,rleft),std::min(r2,rmid),std::max(c1,cmid+1),std::min(c2,cright),length-1,level+1,maxDepth,rleft,cmid,cmid+1,cright,answer);
+            rangeQuery(t->children[1],std::max(r1,rleft),std::min(r2,rmid),std::max(c1,cmid+1),std::min(c2,cright),length-1,level+1,maxDepth,rleft,rmid,cmid+1,cright,answer);
         }
 
         //ask if the trie has a 1 in the third quadrant
         if( t->children[2]!=NULL && intersectRectangles(r1,r2,c1,c2,rmid+1,rright,cleft,cmid) ){
             //add nodes to ansert
-            rangeQuery(t->children[0],std::max(r1,rmid+1),std::min(r2,rright),std::max(c1,cleft),std::min(c2,cmid),length-1,level+1,maxDepth,rmid+1,rright,cleft,cmid,answer);
+            rangeQuery(t->children[2],std::max(r1,rmid+1),std::min(r2,rright),std::max(c1,cleft),std::min(c2,cmid),length-1,level+1,maxDepth,rmid+1,rright,cleft,cmid,answer);
         }
 
         //ask if the trie has a 1 in the fourht quadrant
         if( t->children[3]!=NULL && intersectRectangles(r1,r2,c1,c2,rmid+1,rright,cmid+1,cright) ){
             //add nodes to ansert
-            rangeQuery(t->children[0],std::max(r1,rmid+1),std::min(r2,rright),std::max(c1,cmid+1),std::min(c2,cright),length-1,level+1,maxDepth,rmid+1,rright,cmid+1,cright,answer);
+            rangeQuery(t->children[3],std::max(r1,rmid+1),std::min(r2,rright),std::max(c1,cmid+1),std::min(c2,cright),length-1,level+1,maxDepth,rmid+1,rright,cmid+1,cright,answer);
         }
     }
 }
