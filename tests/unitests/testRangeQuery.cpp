@@ -1,7 +1,31 @@
 #include "../../treeBlock/treeBlockApi.h"
 #include "assert.h"
 
+void printVector(std::vector<int> v){
+    for (int i=0;i<v.size();i++){
+        printf("%i ",v[i]);
+    }
+    printf("\n");
+}
 
+void printMatrix(std::vector< std::vector<int> > m){
+    for (int i=0;i<m.size();i++){
+        for (int j=0;j<m[0].size();j++){
+            printf("%i ",m[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+
+bool isIn(std::vector< std::vector<int> > m,int a,int b){
+    for (int i=0;i<m.size();i++){
+        if(m[i][0]==a && m[i][1]==b){
+            return true;
+        }
+    }
+    return false;
+}
 
 int main(){
 
@@ -74,18 +98,27 @@ int main(){
                 int right=pow(2,pathLength)-1;
                 std::vector<int> neigs;
                 std::vector< std::vector<int> > rangeNodes;
-                getNeighboursTrie(t,neigNode,23,0,22,left,right,left,right,neigs);
-                rangeQuery(t,neigNode,neigNode,0,right,23,0,22,left,right,left,right,rangeNodes);
+                int limit1=0,limit2=right;
+                rangeQuery(t,neigNode,neigNode+49,limit1,limit2,23,0,22,left,right,left,right,rangeNodes);
 
-                assert(neigs.size()==rangeNodes.size());
+                //printMatrix(rangeNodes);
 
-                for(int k=0;k<neigs.size();k++){
-                    assert(neigNode==rangeNodes[k][0]);
-                    assert(neigs[k]==rangeNodes[k][1]);
+                for (int k=0;k<50;k++){
+                    getNeighboursTrie(t,neigNode+k,23,0,22,left,right,left,right,neigs);
+
+                    int s1=0;
+                    while(s1<neigs.size()){
+                        if (limit1<=neigs[s1] && neigs[s1]<=limit2){
+                            assert(isIn(rangeNodes,neigNode+k,neigs[s1]));
+                        }
+                        s1++;
+                    }
+
+
+                    neigs.clear();
                 }
 
 
-                neigs.clear();
                 rangeNodes.clear();
 
 

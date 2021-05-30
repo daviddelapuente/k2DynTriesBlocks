@@ -17,6 +17,14 @@ void printMatrix(std::vector< std::vector<int> > m){
     }
 }
 
+bool isIn(std::vector< std::vector<int> > m,int a,int b){
+    for (int i=0;i<m.size();i++){
+        if(m[i][0]==a && m[i][1]==b){
+            return true;
+        }
+    }
+    return false;
+}
 
 int main(){
 
@@ -49,7 +57,7 @@ int main(){
     int neigNode;
     bool neigNodeDesigned=false;
 
-    for (uint64_t i = 0; i < 5000001; ++i) {
+    for (uint64_t i = 0; i < 190000001; ++i) {
         //we read the line containing the edge
         scanCode=scanf("%s\n", str);
         //todo: podemos cambiar el 23 por length thel string en el futuro.
@@ -92,19 +100,15 @@ int main(){
                 int limit1=312972,limit2=314152;
                 rangeQuery(t,neigNode,neigNode+49,limit1,limit2,23,0,22,left,right,left,right,rangeNodes);
 
-                printMatrix(rangeNodes);
+                //printMatrix(rangeNodes);
 
                 for (int k=0;k<50;k++){
                     getNeighboursTrie(t,neigNode+k,23,0,22,left,right,left,right,neigs);
 
                     int s1=0;
-                    int s2=0;
                     while(s1<neigs.size()){
                         if (limit1<=neigs[s1] && neigs[s1]<=limit2){
-                            printf("aaa\n");
-                            assert(neigNode+k==rangeNodes[s2][0]);
-                            assert(neigs[s1]==rangeNodes[s2][1]);
-                            s2++;
+                            assert(isIn(rangeNodes,neigNode+k,neigs[s1]));
                         }
                         s1++;
                     }
