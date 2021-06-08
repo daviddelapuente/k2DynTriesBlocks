@@ -1120,7 +1120,7 @@ bool intersectRectangles(int ar1,int ar2, int ac1, int ac2, int br1, int br2, in
 
 void rangeQueryBlock(treeBlock *root, int r1,int r2,int c1,int c2, uint64_t length, uint16_t level, uint16_t maxDepth,int rleft,int rright,int cleft,int cright,treeNode curNode,uint16_t curFlag,std::vector< std::vector<int> > &answer){
 
-    if(r1==r2 && c1==c2 ){
+    if(rleft==rright && cleft==cright && r1==r2 && c1==c2 ){
         std::vector<int> graphNode;
         graphNode.push_back(r1);
         graphNode.push_back(c1);
