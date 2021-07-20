@@ -370,12 +370,6 @@ void unionBlocks(treeBlock * father, treeBlock * son,uint16_t flag,uint16_t flag
 
     father->grow(son->nNodes-1);
 
-    for(int k=father->nNodes;k<father->maxNodes;k++){
-        int i=k/4;
-        int j=k%4;
-        father->dfuds[i]=father->dfuds[i]&table[j];
-    }
-
 
 
     //move all the nodes from flag+1 till the end, son->nNodes-1 Spaces
@@ -596,6 +590,10 @@ bool deleteBlockNodes(treeBlock *root, uint8_t str[], uint64_t length, uint16_t 
                 }
                 //substract 1 node from nNodes and delete the zeros
                 actualBlock->nNodes--;
+
+	    // !(actualNode.first==0 && actualNode.second==0 && i!=0) catch all the root nodes of a block
+	    // if a root node of a block is modified, the same node in the father, also need to be modified.
+	    // except the first node in the path.
             }else if(!(actualNode.first==0 && actualNode.second==0 && i!=0)){
                 //if auxFirst !=0 that means that the path was forked so we return false
                 root->bgv->delTreeNodeIndex=0;

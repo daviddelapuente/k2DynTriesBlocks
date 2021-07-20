@@ -84,18 +84,19 @@ int main(){
                 int pathLength=23;
                 int left=0;
                 int right=pow(2,pathLength)-1;
-                std::vector<int> neigs;
+                std::vector< std::vector<int> > rangeNodes;
+		int limit1=0,limit2=right;
                 start = clock();
-                getNeighboursTrie(t,neigNode,23,0,22,left,right,left,right,neigs);
+                rangeQuery(t,neigNode,neigNode+99999,limit1,limit2,23,0,22,left,right,left,right,rangeNodes);
                 diff += clock() - start;
-                neigs.clear();
+                rangeNodes.clear();
 
 
             }
 
-            uint64_t msec = diff * 1000 ;
-            printf("     neigTime=%lu\n",msec);
-            fprintf(fpneig,"%lu,\n",msec);
+            uint64_t msec = diff * 1000 / CLOCKS_PER_SEC;
+            printf("     neigTime=%f\n",(float) msec);
+            fprintf(fpneig,"%f,\n",(float) msec);
         }
     }
 
